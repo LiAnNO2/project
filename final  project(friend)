@@ -6,18 +6,37 @@
 #include <chrono>
 #include <cstdlib>
 #include <algorithm>
+#include <thread>
 using namespace std;
 
 vector<string> card = { "A","2","3","4","5","6","7","8","9","10","J","Q","K" };
-vector<int> card_n = { 10,2,3,4,5,6,7,8,9,10,10,10,10 };
+vector<int> card_n = { 11,2,3,4,5,6,7,8,9,10,10,10,10 };
+vector<int> count_com;
+vector<int> count_play;
+vector<string> ooxx = { "   ","   ","   " };
 
-int count_num(vector<string> v, int c, int sum1);
+int count_num(vector<int> s);
 string jugde(string str, string answer);
 string decrypt(string s, int a);
+void printHorizontalLine(int size) {
+	cout << "+";
+	for (int i = 0; i < size; i++) {
+		cout << "---+";
+	}
+	cout << endl;
+}
+
+void printVerticalLine(int size) {
+	cout << "|";
+	for (int i = 0; i < size; i++) {
+		cout << "   |";
+	}
+	cout << endl;
+}
 
 int main() {
 	int a;
-	int m, n;
+	int m,n,h,h1;
 	int total_computer;
 	int total_player;
 	char ch;
@@ -44,35 +63,35 @@ int main() {
 	ofstream file(filename1);
 	while (1) {
 		if (b == "no") {
-			cout << "------------------------------------" << endl;
-			cout << endl;
+			cout << "------------------------------------\n" << endl;
 			cout << "Thank you for your playing" << endl;
 			break;
 		}
-		cout << "Game 1 : Black Jack" << endl;
-		cout << "Game 2 : Cows and Bulls" << endl;
-		cout << "Game 3 : Caesar cipher" << endl;
-		cout << endl;
-		cout << "I want to play game ";
+		cout << "1. Black Jack" << endl;
+		cout << "2. Cows and Bulls" << endl;
+		cout << "3. Caesar cipher" << endl;
+		cout << "4. Tic Tac Toe" << endl;
+		cout << "5. Exit\n" << endl;
+		cout << "I want to choose ";
 		cin >> a;
-		cout << "------------------------------------" << endl;
 		switch (a) {
-		case 1:
+		case 1:   //可以優化版面
 			system("cls");
-			cout << "Welcome to Black Jack" << endl;
-			cout << endl;
+			cout << "Welcome to Black Jack\n" << endl;
 			m = 0, n = 0;
 			total_computer = 0;
 			total_player = 0;
 			for (int i = 0; i < 2; i++) {
 				int c = dist(gen);
 				computer.push_back(card[c - 1]);
-				total_computer = count_num(computer, c - 1, total_computer);
+				count_com.push_back(card_n[c - 1]);
+				total_computer = count_num(count_com);
 			}
 			for (int i = 0; i < 2; i++) {
 				int d = dist(gen);
 				player.push_back(card[d - 1]);
-				total_player = count_num(player, d - 1, total_player);
+				count_play.push_back(card_n[d - 1]);
+				total_player = count_num(count_play);
 			}
 			cout << "computer card : " << computer[0] << " " << computer[1] << endl;
 			cout << "your card : " << player[0] << " " << player[1] << endl;
@@ -83,12 +102,13 @@ int main() {
 				else {
 					int e = dist(gen);
 					computer.push_back(card[e - 1]);
-					total_computer = count_num(computer, e - 1, total_computer);
+					count_com.push_back(card_n[e - 1]);
+					total_computer = count_num(count_com);
 					cout << "computer card :";
 					for (int i = 0; i < computer.size(); i++) {
 						cout << " " << computer[i];
 					}
-					cout << " your card : " << player[0] << " " << player[1] << endl;
+					cout << "  your card : " << player[0] << " " << player[1] << endl;
 				}
 			}
 			cout << "\nYour turn" << endl;
@@ -101,12 +121,13 @@ int main() {
 				else if (p == "y") {
 					int e = dist(gen);
 					player.push_back(card[e - 1]);
-					total_player = count_num(player, e - 1, total_player);
+					count_play.push_back(card_n[e - 1]);
+					total_player = count_num(count_play);
 					cout << "computer card :";
 					for (int i = 0; i < computer.size(); i++) {
 						cout << " " << computer[i];
 					}
-					cout << " your card :";
+					cout << "  your card : ";
 					for (int i = 0; i < player.size(); i++) {
 						cout << " " << player[i];
 					}
@@ -116,7 +137,7 @@ int main() {
 					cout << "Please try to press \'y\' or \'n\'" << endl;
 				}
 			}
-			cout << "total result :\ncomputer point : " << total_computer << "\nyour point : " << total_player << endl;
+			cout << "\ntotal result :\ncomputer point : " << total_computer << "\nyour point : " << total_player << endl;
 			if (total_computer > 21) m = 1;
 			if (total_player > 21) n = 1;
 			if (total_computer == 21 && total_player != 21) {
@@ -136,10 +157,13 @@ int main() {
 			else cout << "draw" << endl;
 			computer.clear();
 			player.clear();
+			cout << "\nWait for 5 seconds and go back to mainpage";
+			std::this_thread::sleep_for(std::chrono::seconds(5));
+			system("cls");
 			break;
 		case 2:
 			system("cls");
-			cout << "Welcome to Cows and Bulls" << endl;
+			cout << "Welcome to Cows and Bulls\n" << endl;
 			for (int i = 0; i < 4; i++) {
 				int num;
 				do {
@@ -152,20 +176,25 @@ int main() {
 				cout << "Try to enter your answer : ";
 				cin >> str;
 				if (jugde(str, answer) == "4A0B") {
-					cout << "Congraguation!!!" << endl;
+					cout << "\nCongraguation!!!" << endl;
 					break;
 				}
 				else {
 					cout << jugde(str, answer) << endl;
 				}
 				if (l == 9) {
+					cout << "\nThe answer is : " << answer << endl;
 					cout << "Next time will be better" << endl;
+					
 				}
 			}
+			cout << "\nWait for 5 seconds and go back to mainpage";
+			std::this_thread::sleep_for(std::chrono::seconds(5));
+			system("cls");
 			break;
 		case 3:
 			system("cls");
-			cout << "Welcome to Caesar cipher" << endl;
+			cout << "Welcome to Caesar cipher\n" << endl;
 			getchar();
 
 			if (!myfile) {
@@ -186,36 +215,67 @@ int main() {
 			}
 			file << gg;
 			file.close();
+			cout << "\nWait for 5 seconds and go back to mainpage";
+			std::this_thread::sleep_for(std::chrono::seconds(5));
+			system("cls");
+			break;
+		case 4: // 井字遊戲
+			system("cls");
+			cout << "Welcome to play Tic Tac Toe\n" << endl;
+			for (;;) {
+				for (int i = 0; i < 3; i++) {
+					printHorizontalLine(3);
+					printVerticalLine(3);
+				}
+				printHorizontalLine(3);
+				cout << "Where do you want to choose? ";
+				
+			}
+			cout << "\nWait for 5 seconds and go back to mainpage";
+			std::this_thread::sleep_for(std::chrono::seconds(5));
+			system("cls");
+			break;
+		case 5:
+			system("cls");
+			cout << "Are you sure to leave the game?"; // 打 y 或 n
+			cin >> b;
+			if (b == "y") {
+				system("cls");
+				cout << "Thanks for your playing" << endl;
+				return 0;
+			}
+			system("cls");
 			break;
 		default:
 			system("cls");
-			cout << "We don't have this game.\nTry to choose other games." << endl;
-			cout << "------------------------------------" << endl;
+			cout << "We don't have this case.\nTry to choose other cases." << endl;
+			cout << "Wait for 3 seconds and back to main page" << endl;
+			std::this_thread::sleep_for(std::chrono::seconds(3));
+			system("cls");
 			break;
 		}
-		cout << "------------------------------------" << endl;
-		cout << "Do you want to play this or other games ?\nPlease enter \"yes\" or \"no\"\n";
-		cin >> b;
 	}
 	return 0;
 }
 
-inline int count_num(vector<string> s, int c, int sum1) {
-	int h = 0; // 看有沒有A
+inline int count_num(vector<int> s) {
 	int sum = 0;
+	int h = 0; // 看有幾個A
 	for (int i = 0; i < s.size(); i++) {
-		if (s[i] == "A") {
-			h = 1;
+		sum += s[i];
+		if (s[i] == 11) {
+			h += 1;
 		}
 	}
-	sum += card_n[c];
-	sum += sum1;
-	if (sum > 21 && h == 1) {
-		return sum - 10;
+	for (int j = 0; j < h; j++) {
+		if (sum > 21) {
+			sum -= 10;
+		}
+		else {
+			break;
+		}
 	}
-	else {
-		return sum;
-	}
+	return sum;
 }
 
 string jugde(string str, string answer) {
@@ -265,3 +325,4 @@ string decrypt(string s, int a) {
 	}
 	return h;
 }
+
