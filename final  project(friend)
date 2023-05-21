@@ -18,6 +18,11 @@ vector<string> ooxx = { "   ","   ","   " };
 int count_num(vector<int> s);
 string jugde(string str, string answer);
 string decrypt(string s, int a);
+void printBoard(const std::vector<std::vector<char>>& board);
+bool checkWin(const std::vector<std::vector<char>>& board, char player);
+bool checkTie(const std::vector<std::vector<char>>& board);
+void playGame();
+
 void printHorizontalLine(int size) {
 	cout << "+";
 	for (int i = 0; i < size; i++) {
@@ -74,6 +79,7 @@ int main() {
 		cout << "5. Exit\n" << endl;
 		cout << "I want to choose ";
 		cin >> a;
+		getchar();
 		switch (a) {
 		case 1:   //可以優化版面
 			system("cls");
@@ -157,8 +163,8 @@ int main() {
 			else cout << "draw" << endl;
 			computer.clear();
 			player.clear();
-			cout << "\nWait for 5 seconds and go back to mainpage";
-			std::this_thread::sleep_for(std::chrono::seconds(5));
+			cout << "\nWait for 7 seconds and go back to mainpage";
+			std::this_thread::sleep_for(std::chrono::seconds(7));
 			system("cls");
 			break;
 		case 2:
@@ -188,8 +194,8 @@ int main() {
 					
 				}
 			}
-			cout << "\nWait for 5 seconds and go back to mainpage";
-			std::this_thread::sleep_for(std::chrono::seconds(5));
+			cout << "\nWait for 7 seconds and go back to mainpage";
+			std::this_thread::sleep_for(std::chrono::seconds(7));
 			system("cls");
 			break;
 		case 3:
@@ -221,18 +227,10 @@ int main() {
 			break;
 		case 4: // 井字遊戲
 			system("cls");
-			cout << "Welcome to play Tic Tac Toe\n" << endl;
-			for (;;) {
-				for (int i = 0; i < 3; i++) {
-					printHorizontalLine(3);
-					printVerticalLine(3);
-				}
-				printHorizontalLine(3);
-				cout << "Where do you want to choose? ";
-				
-			}
-			cout << "\nWait for 5 seconds and go back to mainpage";
-			std::this_thread::sleep_for(std::chrono::seconds(5));
+			cout << "Welcome to Tic Tac Toe\n" << endl;
+			playGame();
+			cout << "\nWait for 7 seconds and go back to mainpage";
+			std::this_thread::sleep_for(std::chrono::seconds(7));
 			system("cls");
 			break;
 		case 5:
@@ -326,3 +324,102 @@ string decrypt(string s, int a) {
 	return h;
 }
 
+void printBoard(const std::vector<std::vector<char>>& board) {
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			cout << board[i][j] << ' ';
+		}
+		cout << endl;
+	}
+}
+
+bool checkWin(const std::vector<std::vector<char>>& board, char player) {
+	// 檢查行
+	for (int i = 0; i < 3; ++i) {
+		if (board[i][0] == player && board[i][1] == player && board[i][2] == player)
+			return true;
+	}
+
+	// 檢查列
+	for (int j = 0; j < 3; ++j) {
+		if (board[0][j] == player && board[1][j] == player && board[2][j] == player)
+			return true;
+	}
+
+	// 檢查對角線
+	if (board[0][0] == player && board[1][1] == player && board[2][2] == player)
+		return true;
+
+	if (board[0][2] == player && board[1][1] == player && board[2][0] == player)
+		return true;
+
+	return false;
+}
+
+bool checkTie(const std::vector<std::vector<char>>& board) {
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (board[i][j] == ' ')
+				return false;
+		}
+	}
+	return true;
+}
+
+void playGame() {
+	string player1, player2;
+	vector<vector<char>> board(3, vector<char>(3, ' '));
+	char currentPlayer = 'O';
+
+	cout << "Enter the first player's name : ";
+	getline(cin, player1);
+	cout << "\nEnter the second player's name : ";
+	getline(cin, player2);
+	cout << endl;
+	cout << "提示 : x軸正方向向右,y軸正方向向下\n" << endl;
+
+	while (true) {
+		string curr;
+		if (currentPlayer == 'O') {
+			curr = player1;
+		}
+		else {
+			curr = player2;
+		}
+		cout << "目前玩家: " << curr << "(" << currentPlayer << ")" << endl;
+		printBoard(board);
+
+		int row, col;
+		cout << "請輸入座標 (格式：x y)：";
+		cin >> col >> row;
+
+		row -= 1;
+		col -= 1;
+
+		if (row < 0 || row >= 3 || col < 0 || col >= 3) {
+			cout << "輸入無效！請重新輸入。" << endl;
+			continue;
+		}
+
+		if (board[row][col] != ' ') {
+			cout << "該位置已經被佔據！請重新輸入。" << endl;
+			continue;
+		}
+
+		board[row][col] = currentPlayer;
+
+		if (checkWin(board, currentPlayer)) {
+			cout << "\n玩家 " << curr << "(" << currentPlayer << ")" << " 獲勝!" << endl;
+			break;
+		}
+
+		if (checkTie(board)) {
+			cout << "\n遊戲平局!" << endl;
+			break;
+		}
+
+		// 換玩家
+		currentPlayer = (currentPlayer == 'O') ? 'X' : 'O';
+		cout << endl;
+	}
+}
