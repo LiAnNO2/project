@@ -376,7 +376,7 @@ void playGame() {
 	cout << "\nEnter the second player's name : ";
 	getline(cin, player2);
 	cout << endl;
-	cout << "提示 : x軸正方向向右,y軸正方向向下\n" << endl;
+	cout << "Note : The x-axis is positive to the right, and the y-axis is positive downward\n" << endl;
 
 	while (true) {
 		string curr;
@@ -386,35 +386,35 @@ void playGame() {
 		else {
 			curr = player2;
 		}
-		cout << "目前玩家: " << curr << "(" << currentPlayer << ")" << endl;
+		cout << "current player: " << curr << "(" << currentPlayer << ")" << endl;
 		printBoard(board);
 
 		int row, col;
-		cout << "請輸入座標 (格式：x y)：";
+		cout << "Please enter coordinates (format：x y):";
 		cin >> col >> row;
 
 		row -= 1;
 		col -= 1;
 
 		if (row < 0 || row >= 3 || col < 0 || col >= 3) {
-			cout << "輸入無效！請重新輸入。" << endl;
+			cout << "Invalid input ! Please enter again" << endl;
 			continue;
 		}
 
 		if (board[row][col] != ' ') {
-			cout << "該位置已經被佔據！請重新輸入。" << endl;
+			cout << "The position is already taken ! Please enter again" << endl;
 			continue;
 		}
 
 		board[row][col] = currentPlayer;
 
 		if (checkWin(board, currentPlayer)) {
-			cout << "\n玩家 " << curr << "(" << currentPlayer << ")" << " 獲勝!" << endl;
+			cout << "\nPlayer " << curr << "(" << currentPlayer << ")" << " win!" << endl;
 			break;
 		}
 
 		if (checkTie(board)) {
-			cout << "\n遊戲平局!" << endl;
+			cout << "\ndraw!" << endl;
 			break;
 		}
 
